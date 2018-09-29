@@ -11,7 +11,7 @@ Somehow - from a blog post, tweet, or lightning talk - a command-line tool comes
 
 Ah, the installation instructions say `npm install -g this-package`.  But you don't have a global installation of npm.  You use nix, which lets isolated package sets, package versions, node versions, and everything else, coexist on the same system without complaint.  You will never go back to the bad old days of globally installing language-specific package managers, much less language-specific packages!
 
-<aside>(If that isn't you yet, you'll get more value from reading <a href="https://nixos.org/nix/manual/#chap-introduction">an instroduction to nix</a> than this post, but bookmark it and come back later when the time is right.)</aside>
+<aside>(If that isn't you yet, you'll get more value from reading <a href="https://nixos.org/nix/manual/#chap-introduction">an introduction to nix</a> than this post, but bookmark it and come back later when the time is right.)</aside>
 
 But this is different: we're talking about a command-line tool which happens to be written in a particular language.  And nix is a perfect match for this kind of thing: a package definition for this tool could automatically install every dependency it needed, but _only_ add the tool itself to your $PATH, hiding npm and node themselves as implementation details.
 
@@ -90,6 +90,7 @@ The `-i` argument specifies what `i`nterpreter the script needs - in this case, 
 But manually moving scripts around is scrub-tier garbage.  The second and superior way to solve the dependency problem is to _install the script itself as a nix package_.  I know, I know: we were doing all this to avoid writing packages, but I swear, it's almost as simple as adding those same six lines of bash directly to your package overrides in `~/.nixpkgs/config.nix`:
 
 ```nix 
+{ pkgs }:
 {
   packageOverrides = super: {
     nix-npm-install = pkgs.writeScriptBin "nix-npm-install" ''
@@ -102,7 +103,8 @@ But manually moving scripts around is scrub-tier garbage.  The second and superi
       nix-env --install --file .
       popd
     ''; 
-  }
+  };
+}
 ```
 
 And that, with only a few changes, is what I use today.
